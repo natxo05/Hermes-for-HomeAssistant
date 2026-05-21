@@ -1,0 +1,23 @@
+name: "Assistent Virtual per Veu"
+version: "1.0.0"
+slug: "telegram_voice_assistant"
+description: "Bot de Telegram que transcriu notes de veu amb Whisper i les afegeix a la llista de compra o al calendari de Home Assistant"
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+startup: application
+boot: auto
+homeassistant_api: true
+options:
+  telegram_token: ""
+  calendar_entity: "calendar.medic"
+  whisper_model: "tiny"
+  language: "ca"
+schema:
+  telegram_token: str
+  calendar_entity: str
+  whisper_model: list(tiny|base|small|medium|large)
+  language: list(ca|es|en)
