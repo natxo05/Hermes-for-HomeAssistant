@@ -1,0 +1,63 @@
+configuration:
+  telegram_token:
+    name: Telegram bot token
+    description: >-
+      Token provided by @BotFather when creating the bot. Required.
+  allowed_user_ids:
+    name: Allowed users
+    description: >-
+      Numeric Telegram user IDs allowed to use the bot. Send /id to the bot to
+      find yours. An empty list means nobody has access.
+  gemini_api_key:
+    name: Gemini API key
+    description: >-
+      Key created at https://aistudio.google.com/apikey. Required.
+  gemini_model:
+    name: Gemini model
+    description: >-
+      Model that interprets messages. gemini-2.5-flash is fast and cheap;
+      gemini-2.5-pro reasons better but costs more.
+  whisper_model:
+    name: Speech model
+    description: >-
+      faster-whisper model size. Bigger is more accurate but slower. The model
+      is downloaded on first start (takes a few minutes).
+  whisper_compute_type:
+    name: Speech compute precision
+    description: >-
+      int8 is fastest and lightest. float32 is more accurate but much slower.
+  language:
+    name: Transcription language
+    description: >-
+      ISO language code for speech (ca, es, en...). Leave empty for automatic
+      detection.
+  shopping_list_entity:
+    name: Default shopping list
+    description: >-
+      entity_id of the list (for example todo.shopping_list). Falls back to the
+      first available list.
+  calendar_entity:
+    name: Default calendar
+    description: >-
+      entity_id of the calendar used for new events (for example
+      calendar.personal). Falls back to the first available calendar.
+  timezone:
+    name: Time zone
+    description: >-
+      Time zone used to interpret dates. If empty, Home Assistant's time zone is
+      used.
+  max_history_turns:
+    name: Conversation memory
+    description: >-
+      Number of exchanges remembered per chat. 0 disables memory.
+  confirm_domains:
+    name: Domains requiring confirmation
+    description: >-
+      Domains where sensitive actions (open, unlock...) must be confirmed with a
+      button before running.
+  startup_message:
+    name: Startup message
+    description: Sends a message to allowed users when the add-on starts.
+  debug:
+    name: Debug logging
+    description: Show more information in the add-on log.

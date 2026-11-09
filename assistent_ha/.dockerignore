@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+data/
+.git/
+.gitignore
+README.md
+DOCS.md
+*.log

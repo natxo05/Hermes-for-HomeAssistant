@@ -1,0 +1,63 @@
+configuration:
+  telegram_token:
+    name: Token del bot de Telegram
+    description: >-
+      Token que et dona @BotFather en crear el bot. És obligatori.
+  allowed_user_ids:
+    name: Usuaris autoritzats
+    description: >-
+      IDs numèrics de Telegram que poden fer servir el bot. Envia /id al bot per
+      saber el teu. Si la llista és buida, ningú no hi tindrà accés.
+  gemini_api_key:
+    name: Clau de l'API de Gemini
+    description: >-
+      Clau creada a https://aistudio.google.com/apikey. És obligatòria.
+  gemini_model:
+    name: Model de Gemini
+    description: >-
+      Model que interpreta els missatges. gemini-2.5-flash és ràpid i econòmic;
+      gemini-2.5-pro raona millor però és més car.
+  whisper_model:
+    name: Model de veu
+    description: >-
+      Mida del model faster-whisper. Com més gran, més precís i més lent.
+      El model es descarrega la primera vegada (triga uns minuts).
+  whisper_compute_type:
+    name: Precisió de càlcul de la veu
+    description: >-
+      int8 és el més ràpid i lleuger. float32 és més precís però molt més lent.
+  language:
+    name: Idioma de la transcripció
+    description: >-
+      Codi ISO de l'idioma de la veu (ca, es, en...). Deixa'l buit per detecció
+      automàtica.
+  shopping_list_entity:
+    name: Llista de la compra per defecte
+    description: >-
+      entity_id de la llista (per exemple todo.shopping_list). Si no existeix,
+      s'utilitza la primera llista disponible.
+  calendar_entity:
+    name: Calendari per defecte
+    description: >-
+      entity_id del calendari on es crearan les cites (per exemple
+      calendar.personal). Si no existeix, s'utilitza el primer calendari.
+  timezone:
+    name: Zona horària
+    description: >-
+      Zona horària per interpretar dates. Si la deixes buida, s'agafa la de
+      Home Assistant.
+  max_history_turns:
+    name: Memòria de la conversa
+    description: >-
+      Nombre d'intercanvis que el model recorda per xat. 0 desactiva la memòria.
+  confirm_domains:
+    name: Dominis que demanen confirmació
+    description: >-
+      Dominis on les accions sensibles (obrir, desbloquejar...) es confirmen amb
+      un botó abans d'executar-se.
+  startup_message:
+    name: Missatge d'inici
+    description: Envia un missatge als usuaris autoritzats quan arrenca l'add-on.
+  debug:
+    name: Mode de depuració
+    description: Mostra més informació al registre de l'add-on.
