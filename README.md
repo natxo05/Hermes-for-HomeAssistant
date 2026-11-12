@@ -21,8 +21,9 @@ Detalls complets a [`assistent_ha/README.md`](assistent_ha/README.md).
 
 ## Actualitzar l'add-on
 
-El repositori és la font de la veritat: Home Assistant clona aquest repo i, si no hi ha cap
-imatge publicada, **compila l'add-on al dispositiu** amb el `Dockerfile`.
+El repositori és la font de la veritat: Home Assistant clona aquest repo i descarrega la imatge
+publicada a GitHub Container Registry (o **compila l'add-on al dispositiu** amb el `Dockerfile`
+si comentes la línia `image:`).
 
 1. Fes els canvis dins `assistent_ha/`.
 2. **Puja la versió** a `assistent_ha/config.yaml` (per exemple `version: "0.2.0"`).
@@ -33,28 +34,19 @@ imatge publicada, **compila l'add-on al dispositiu** amb el `Dockerfile`.
 La versió és el que Home Assistant compara: **si no la puges, no veurà cap actualització**.
 També és l'etiqueta de la imatge, així que mai reutilitzis una versió ja publicada.
 
-### Imatges precompilades (opcional, més ràpid)
+### Imatges precompilades
 
-Compilar al dispositiu funciona, però en una Raspberry Pi cada actualització triga uns minuts.
 El workflow [`.github/workflows/build.yaml`](.github/workflows/build.yaml) compila la imatge per a
-`amd64` i `aarch64` i la publica a GitHub Container Registry.
+`amd64` i `aarch64` i la publica a GitHub Container Registry cada cop que puja la versió.
+L'add-on ja apunta a aquesta imatge, així que Home Assistant la descarrega en lloc de compilar-la
+al dispositiu (molt més ràpid en una Raspberry Pi).
 
-Per activar-lo:
+El flux d'actualització és el mateix: puja la versió a `assistent_ha/config.yaml`, fes commit i
+push, espera que acabi l'acció **Build add-on image** i, a Home Assistant,
+**Botiga → ⋮ → Comprova les actualitzacions**.
 
-1. Fes push del repositori a GitHub (el workflow s'executa sol en tocar `assistent_ha/**`).
-2. Espera que acabi l'acció **Build add-on image**.
-3. A GitHub: **Packages → hermes → Package settings → Change visibility → Public**.
-   Sense això Home Assistant no podrà descarregar-la.
-4. Descomenta `image:` a `assistent_ha/config.yaml` i posa el teu usuari:
-
-   ```yaml
-   image: "ghcr.io/natxo05/hermes"
-   ```
-
-   O executa `.\scripts\configure.ps1 -Owner EL_TEU_USUARI -UsePrebuiltImages`.
-
-A partir d'aquí, Home Assistant descarrega la imatge en comptes de compilar-la. Les
-actualitzacions segueixen el mateix flux: puja la versió, push, i *Comprova les actualitzacions*.
+Si prefereixes compilar al dispositiu, comenta la línia `image:` de
+`assistent_ha/config.yaml`.
 
 ## Estructura
 
