@@ -19,7 +19,7 @@ telegram_token: "123456789:AAF..."
 allowed_user_ids:
   - 123456789
 gemini_api_key: "AIza..."
-gemini_model: gemini-2.5-flash
+gemini_model: gemini-3.8-flash
 whisper_model: small
 language: ca
 shopping_list_entity: todo.shopping_list
@@ -56,7 +56,7 @@ Revisa que l'entitat existeixi a Home Assistant i que el nom a `shopping_list_en
 `calendar_entity` sigui l'`entity_id` complet (`todo.xxx`, `calendar.xxx`).
 
 **Gemini retorna error 429**
-Has superat la quota gratuïta. Espera una estona o canvia de model a `gemini-2.5-flash-lite`.
+Has superat la quota gratuïta. Espera una estona o canvia de model a `gemini-3.5-flash-lite`.
 
 **El panell lateral no carrega**
 L'add-on ha d'estar iniciat; el panell escolta al port intern 8099 i es publica via ingress.

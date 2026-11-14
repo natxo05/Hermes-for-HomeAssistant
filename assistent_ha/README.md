@@ -67,7 +67,7 @@ Les dades de `/data` (configuració, recordatoris i models de veu) es conserven 
 | `telegram_token` | — | Token de @BotFather (obligatori). |
 | `allowed_user_ids` | `[]` | IDs de Telegram autoritzats. **Si és buit, ningú no hi pot accedir.** |
 | `gemini_api_key` | — | Clau de Gemini (obligatòria). |
-| `gemini_model` | `gemini-2.5-flash` | `gemini-2.5-pro` raona millor i costa més. |
+| `gemini_model` | `gemini-3.8-flash` | `gemini-3.5-flash-lite` és més barat; `gemini-4-hydrogen` raona millor i costa més. |
 | `whisper_model` | `small` | `tiny`, `base`, `small`, `medium`, `large-v3`. |
 | `whisper_compute_type` | `int8` | `int8` (ràpid), `float32` (precís i lent). |
 | `language` | `ca` | Idioma de la transcripció; buit = detecció automàtica. |

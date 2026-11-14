@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Model per defecte actualitzat a `gemini-3.8-flash`: `gemini-2.5-flash` està obsolet i
+  a partir de l'1 de desembre de 2026 les peticions es redirigeixen automàticament.
+- Imatge precompilada de GHCR activada per defecte (actualitzacions molt més ràpides).
+
 ## 0.1.0
 
 Primera versió.

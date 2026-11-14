@@ -15,8 +15,8 @@ configuration:
   gemini_model:
     name: Model de Gemini
     description: >-
-      Model que interpreta els missatges. gemini-2.5-flash és ràpid i econòmic;
-      gemini-2.5-pro raona millor però és més car.
+      Model que interpreta els missatges. gemini-3.8-flash és ràpid i econòmic;
+      gemini-3.5-flash-lite encara és més barat, i gemini-4-hydrogen raona millor.
   whisper_model:
     name: Model de veu
     description: >-
