@@ -28,6 +28,28 @@ class TranscriptionError(RuntimeError):
     pass
 
 
+def _check_cpu_support() -> None:
+    """Avís clar si la CPU no pot executar faster-whisper (típic en VMs amb CPU genèrica)."""
+    import platform
+
+    if platform.machine().lower() not in {"x86_64", "amd64"}:
+        return
+    try:
+        cpuinfo = Path("/proc/cpuinfo").read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return
+    flags: set[str] = set()
+    for line in cpuinfo.splitlines():
+        if line.lower().startswith("flags"):
+            flags.update(line.split(":", 1)[1].split())
+    if flags and "sse4_1" not in flags:
+        raise TranscriptionError(
+            "aquest processador no té SSE4.1, que faster-whisper necessita. "
+            "Si Home Assistant corre en una màquina virtual, canvia el tipus de CPU a "
+            "'host' (Proxmox: Màquina → Maquinari → Processadors → Tipus: host)."
+        )
+
+
 class SpeechToText:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
@@ -58,7 +80,14 @@ class SpeechToText:
         return self._model
 
     def _load_model(self):
-        from faster_whisper import WhisperModel  # import pesat, només quan cal
+        _check_cpu_support()
+        try:
+            from faster_whisper import WhisperModel  # import pesat, només quan cal
+        except Exception as exc:  # numpy incompatible, falta una llibreria, etc.
+            raise TranscriptionError(
+                "no es pot carregar el motor de veu en aquest equip "
+                f"({type(exc).__name__}: {exc}). Consulta el registre de l'add-on."
+            ) from exc
 
         log.info(
             "Carregant faster-whisper '%s' (compute_type=%s)...",

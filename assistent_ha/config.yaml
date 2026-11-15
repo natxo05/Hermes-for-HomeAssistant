@@ -1,5 +1,5 @@
 name: Hermes
-version: "0.1.1"
+version: "0.1.2"
 slug: assistent_ha
 description: Hermes, assistent personal per Telegram (text i veu) amb Gemini i accions a Home Assistant
 url: https://github.com/natxo05/Hermes-for-HomeAssistant
