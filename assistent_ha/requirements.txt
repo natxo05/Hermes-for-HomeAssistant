@@ -1,6 +1,11 @@
 python-telegram-bot>=21.6
 google-genai>=1.0.0
 faster-whisper>=1.0.3
+# PyAV 19 ha eliminat l'argument 'metadata_errors' de av.open(), però
+# faster-whisper 1.2.x encara el fa servir i peta amb
+# "TypeError: open() got an unexpected keyword argument 'metadata_errors'".
+# La 18.x és l'última compatible.
+av>=11,<19
 # NumPy 2.4+ publica rodes compilades per a x86-64-v2 (SSE4.2 + POPCNT).
 # En CPUs antics o màquines virtuals amb CPU genèrica això peta en importar
 # numpy ("your machine doesn't support X86_V2"). La 2.3.x encara serveix

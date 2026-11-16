@@ -17,6 +17,12 @@ configuration:
     description: >-
       Model that interprets messages. gemini-3.8-flash is fast and cheap;
       gemini-3.5-flash-lite is even cheaper, and gemini-4-hydrogen reasons better.
+  fallback_model:
+    name: Fallback model
+    description: >-
+      If the main model runs out of quota (429 error), this one is tried instead.
+      Free quota is counted per model, so a fallback doubles the daily headroom.
+      Leave empty to disable.
   whisper_model:
     name: Speech model
     description: >-

@@ -68,6 +68,7 @@ Les dades de `/data` (configuració, recordatoris i models de veu) es conserven 
 | `allowed_user_ids` | `[]` | IDs de Telegram autoritzats. **Si és buit, ningú no hi pot accedir.** |
 | `gemini_api_key` | — | Clau de Gemini (obligatòria). |
 | `gemini_model` | `gemini-3.8-flash` | `gemini-3.5-flash-lite` és més barat; `gemini-4-hydrogen` raona millor i costa més. |
+| `fallback_model` | `gemini-3.5-flash-lite` | Model que es prova si el principal esgota la quota (429). Buit = desactivat. |
 | `whisper_model` | `small` | `tiny`, `base`, `small`, `medium`, `large-v3`. |
 | `whisper_compute_type` | `int8` | `int8` (ràpid), `float32` (precís i lent). |
 | `language` | `ca` | Idioma de la transcripció; buit = detecció automàtica. |

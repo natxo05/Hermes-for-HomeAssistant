@@ -18,6 +18,7 @@ DEFAULTS: dict = {
     "allowed_user_ids": [],
     "gemini_api_key": "",
     "gemini_model": "gemini-3.8-flash",
+    "fallback_model": "gemini-3.5-flash-lite",
     "whisper_model": "small",
     "whisper_compute_type": "int8",
     "language": "ca",
@@ -34,6 +35,7 @@ ENV_OVERRIDES = {
     "telegram_token": "TELEGRAM_TOKEN",
     "gemini_api_key": "GEMINI_API_KEY",
     "gemini_model": "GEMINI_MODEL",
+    "fallback_model": "GEMINI_FALLBACK_MODEL",
     "language": "ASSISTANT_LANGUAGE",
     "whisper_model": "WHISPER_MODEL",
 }
@@ -57,6 +59,7 @@ class Settings:
     debug: bool
     ha_url: str
     ha_token: str
+    fallback_model: str = ""
     timezone_auto: bool = False
     data_dir: Path = DATA_DIR
 
@@ -149,6 +152,7 @@ def load_settings() -> Settings:
         allowed_user_ids=_as_int_set(options.get("allowed_user_ids")),
         gemini_api_key=gemini_api_key,
         gemini_model=str(options.get("gemini_model") or "gemini-3.8-flash").strip(),
+        fallback_model=str(options.get("fallback_model") or "").strip(),
         whisper_model=str(options.get("whisper_model") or "small").strip(),
         whisper_compute_type=str(options.get("whisper_compute_type") or "int8").strip(),
         language=str(options.get("language") or "ca").strip(),

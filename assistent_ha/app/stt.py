@@ -50,15 +50,37 @@ def _check_cpu_support() -> None:
         )
 
 
+def _library_version(name: str) -> str:
+    """Versió d'una llibreria instal·lada, per al diagnòstic del registre."""
+    try:
+        from importlib.metadata import version
+
+        return version(name)
+    except Exception:
+        return "desconeguda"
+
+
 class SpeechToText:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
         self._model = None
         self._lock = asyncio.Lock()
+        self._last_error: str | None = None
 
     @property
     def model_name(self) -> str:
         return self._settings.whisper_model
+
+    def status_line(self) -> str:
+        """Resum de l'estat del motor de veu per a /status."""
+        if self._model is not None:
+            return f"✅ carregat ({self.model_name})"
+        if self._last_error:
+            error = self._last_error
+            if len(error) > 140:
+                error = error[:137] + "..."
+            return f"❌ {error}"
+        return f"⏳ carregant {self.model_name}"
 
     async def preload(self) -> None:
         try:
@@ -76,7 +98,20 @@ class SpeechToText:
         async with self._lock:
             if self._model is not None:
                 return self._model
-            self._model = await asyncio.to_thread(self._load_model)
+            try:
+                self._model = await asyncio.to_thread(self._load_model)
+            except TranscriptionError as exc:
+                self._last_error = str(exc)
+                raise
+            except Exception as exc:  # qualsevol altra cosa: no deixar-la anònima
+                self._last_error = f"{type(exc).__name__}: {exc}"
+                log.exception("No he pogut carregar el model de veu '%s'", self.model_name)
+                raise TranscriptionError(
+                    f"no he pogut carregar el model de veu '{self.model_name}' "
+                    f"({type(exc).__name__}: {exc}). Consulta el registre de l'add-on."
+                ) from exc
+            else:
+                self._last_error = None
         return self._model
 
     def _load_model(self):
@@ -90,16 +125,24 @@ class SpeechToText:
             ) from exc
 
         log.info(
-            "Carregant faster-whisper '%s' (compute_type=%s)...",
+            "Carregant faster-whisper '%s' (compute_type=%s, PyAV %s)...",
             self._settings.whisper_model,
             self._settings.whisper_compute_type,
+            _library_version("av"),
         )
-        return WhisperModel(
-            self._settings.whisper_model,
-            device="cpu",
-            compute_type=self._settings.whisper_compute_type,
-            download_root=str(self._settings.models_dir),
-        )
+        try:
+            return WhisperModel(
+                self._settings.whisper_model,
+                device="cpu",
+                compute_type=self._settings.whisper_compute_type,
+                download_root=str(self._settings.models_dir),
+            )
+        except Exception as exc:  # descàrrega, disc ple, model desconegut...
+            raise TranscriptionError(
+                f"no he pogut descarregar o carregar el model "
+                f"'{self._settings.whisper_model}' ({type(exc).__name__}: {exc}). "
+                "Comprova la connexió a huggingface.co i l'espai lliure de l'add-on."
+            ) from exc
 
     async def transcribe(self, audio: bytes, mime_type: str | None = None) -> str:
         if not audio:
@@ -117,13 +160,24 @@ class SpeechToText:
             temp_path.unlink(missing_ok=True)
 
     def _run(self, model, path: Path) -> str:
-        segments, info = model.transcribe(
-            str(path),
-            language=self._settings.language or None,
-            vad_filter=True,
-            beam_size=5,
-        )
-        text = " ".join(segment.text.strip() for segment in segments).strip()
+        try:
+            segments, info = model.transcribe(
+                str(path),
+                language=self._settings.language or None,
+                vad_filter=True,
+                beam_size=5,
+            )
+            text = " ".join(segment.text.strip() for segment in segments).strip()
+        except Exception as exc:
+            hint = ""
+            if "metadata_errors" in str(exc):
+                hint = (
+                    " PyAV és massa nou per a faster-whisper; cal av<19 "
+                    "(actualitza l'add-on)."
+                )
+            raise TranscriptionError(
+                f"error del motor de veu ({type(exc).__name__}: {exc}){hint}"
+            ) from exc
         log.info(
             "Transcripció (%.1f s d'àudio, llengua %s): %s",
             getattr(info, "duration", 0.0),

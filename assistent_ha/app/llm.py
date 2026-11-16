@@ -21,6 +21,14 @@ MAX_TOOL_ROUNDS = 6
 RETRIES = 3
 
 
+def is_quota_error(exc: Exception) -> bool:
+    """Detecta errors 429/quota (reintentar no ajuda; cal canviar de model)."""
+    if getattr(exc, "code", None) == 429:
+        return True
+    text = str(exc)
+    return "RESOURCE_EXHAUSTED" in text or "exceeded your current quota" in text
+
+
 @dataclass
 class AgentReply:
     text: str
@@ -108,21 +116,48 @@ class Agent:
             temperature=0.2,
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         )
+
+        models = [self._settings.gemini_model]
+        fallback = (self._settings.fallback_model or "").strip()
+        if fallback and fallback != models[0]:
+            models.append(fallback)
+
         last_error: Exception | None = None
-        for attempt in range(RETRIES):
-            try:
-                return await self._client.aio.models.generate_content(
-                    model=self._settings.gemini_model,
-                    contents=contents,
-                    config=config,
-                )
-            except Exception as exc:  # errors de xarxa, quota o model
-                last_error = exc
-                log.warning(
-                    "Crida a Gemini fallida (intent %d/%d): %s", attempt + 1, RETRIES, exc
-                )
-                if attempt < RETRIES - 1:
-                    await asyncio.sleep(1.5 * (attempt + 1))
+        for model in models:
+            for attempt in range(RETRIES):
+                try:
+                    response = await self._client.aio.models.generate_content(
+                        model=model,
+                        contents=contents,
+                        config=config,
+                    )
+                except Exception as exc:  # errors de xarxa, quota o model
+                    last_error = exc
+                    quota = is_quota_error(exc)
+                    log.warning(
+                        "Crida a Gemini fallida amb %s (intent %d/%d): %s",
+                        model,
+                        attempt + 1,
+                        RETRIES,
+                        exc,
+                    )
+                    if quota:
+                        # Reintentar no serveix: la quota és per model i projecte.
+                        break
+                    if attempt < RETRIES - 1:
+                        await asyncio.sleep(1.5 * (attempt + 1))
+                else:
+                    if model != self._settings.gemini_model:
+                        log.info(
+                            "Resposta obtinguda amb el model alternatiu %s "
+                            "(quota esgotada a %s).",
+                            model,
+                            self._settings.gemini_model,
+                        )
+                    return response
+            else:
+                continue
+
         assert last_error is not None
         raise last_error
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.3
+
+- **Fix de la transcripció**: PyAV es fixa a `<19`. La 19 ha eliminat l'argument
+  `metadata_errors` de `av.open()`, que faster-whisper 1.2.x encara fa servir, i la veu
+  fallava amb `TypeError: open() got an unexpected keyword argument 'metadata_errors'`.
+- La versió que mostra el registre i `/status` ara és la de l'add-on de veritat (abans
+  sempre deia `0.1.0`).
+- `/status` mostra l'estat del motor de veu (carregat, pendent o l'error concret).
+- Els errors de veu arriben al Telegram amb el motiu, no només amb un missatge genèric.
+- Nou `fallback_model` (per defecte `gemini-3.5-flash-lite`): si el model principal esgota
+  la quota (429), es reintenta amb aquest, perquè la quota gratuïta és per model.
+
 ## 0.1.2
 
 - Fix de la transcripció en CPUs antics o màquines virtuals: NumPy es fixa a `<2.4`,

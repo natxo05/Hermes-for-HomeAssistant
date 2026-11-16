@@ -19,9 +19,10 @@ from telegram.ext import (
     filters,
 )
 
+from . import get_version
 from .config import Settings
 from .ha import HAError, HomeAssistant
-from .llm import Agent
+from .llm import Agent, is_quota_error
 from .reminders import ReminderStore
 from .stt import SpeechToText, TranscriptionError
 from .tools import PendingAction, pop_pending
@@ -148,9 +149,11 @@ async def cmd_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         ha_line = f"❌ Sense connexió: {exc}"
 
     await update.effective_message.reply_text(
+        f"Hermes {get_version()}\n"
         f"{ha_line}\n"
-        f"🧠 Model: {settings.gemini_model}\n"
-        f"🎙️ Veu: faster-whisper {stt.model_name}\n"
+        f"🧠 Model: {settings.gemini_model}"
+        f" (alternatiu: {settings.fallback_model or '—'})\n"
+        f"🎙️ Veu: faster-whisper {stt.status_line()}\n"
         f"🌍 Zona horària: {settings.timezone}\n"
         f"⏰ Recordatoris actius: {reminders.count()}\n"
         f"💬 Missatges en memòria: {agent.history_size(update.effective_chat.id)}"
@@ -197,7 +200,11 @@ async def on_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     except Exception:
         log.exception("Error transcrivint l'àudio")
-        await message.reply_text("No he pogut transcriure l'àudio. Torna-ho a provar.")
+        await message.reply_text(
+            "No he pogut transcriure l'àudio. Torna-ho a provar.\n"
+            "Si es repeteix, mira el registre de l'add-on: Configuració → Add-ons → "
+            "Hermes → Registre."
+        )
         return
 
     if not transcript:
@@ -222,6 +229,17 @@ async def respond(
         runtime.errors += 1
         runtime.last_error = str(exc)
         log.exception("Error del model")
+        settings: Settings = context.application.bot_data["settings"]
+        if is_quota_error(exc):
+            altern = settings.fallback_model or "cap"
+            await message.reply_text(
+                "He esgotat la quota gratuïta de Gemini per avui "
+                f"({settings.gemini_model} i el model alternatiu {altern}).\n\n"
+                "Es reinicia a mitjanit hora del Pacífic (cap a les 09:00 a Catalunya). "
+                "Mentrestant, pots canviar gemini_model a gemini-3.5-flash-lite a la "
+                "configuració de l'add-on."
+            )
+            return
         await message.reply_text(
             "Ho sento, ara mateix no puc processar-ho. Torna-ho a provar d'aquí una estona."
         )

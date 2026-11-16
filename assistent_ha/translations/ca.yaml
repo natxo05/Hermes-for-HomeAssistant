@@ -17,6 +17,12 @@ configuration:
     description: >-
       Model que interpreta els missatges. gemini-3.8-flash és ràpid i econòmic;
       gemini-3.5-flash-lite encara és més barat, i gemini-4-hydrogen raona millor.
+  fallback_model:
+    name: Model alternatiu
+    description: >-
+      Si el model principal esgota la quota (error 429), es prova aquest. La quota
+      gratuïta es compta per model, així que un model alternatiu duplica el marge
+      diari. Deixa-ho buit per desactivar-ho.
   whisper_model:
     name: Model de veu
     description: >-

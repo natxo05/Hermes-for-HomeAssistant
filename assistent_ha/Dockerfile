@@ -15,6 +15,9 @@ LABEL io.hass.type="app" \
       io.hass.version="${BUILD_VERSION}" \
       io.hass.arch="${BUILD_ARCH}"
 
+# La versió real de l'add-on queda disponible per a l'app (log i /status).
+ENV HERMES_VERSION=${BUILD_VERSION}
+
 # ca-certificates per a HTTPS; tzdata per a les zones horàries.
 # ffmpeg no cal: PyAV (dependència de faster-whisper) ja porta els còdecs.
 RUN apt-get update \

@@ -20,6 +20,7 @@ allowed_user_ids:
   - 123456789
 gemini_api_key: "AIza..."
 gemini_model: gemini-3.8-flash
+fallback_model: gemini-3.5-flash-lite
 whisper_model: small
 language: ca
 shopping_list_entity: todo.shopping_list
@@ -48,15 +49,20 @@ Les accions sensibles (obrir persianes, desbloquejar panys) demanen confirmació
 Comprova que `allowed_user_ids` conté el teu ID i mira el registre de l'add-on.
 
 **«No he pogut transcriure l'àudio»**
-La primera transcripció descarrega el model (diversos minuts). Si falla, prova `whisper_model: base`
-o revisa l'espai lliure.
+El missatge del bot inclou el motiu real (per exemple `TypeError: open() got an unexpected
+keyword argument 'metadata_errors'`, que és un PyAV massa nou). Comprova la versió instal·lada a
+`/status` i actualitza l'add-on. Si el motiu és de descàrrega, revisa la connexió a
+`huggingface.co` i l'espai lliure; si és de memòria, prova `whisper_model: base`.
 
 **«No trobo la llista/calendari»**
 Revisa que l'entitat existeixi a Home Assistant i que el nom a `shopping_list_entity` /
 `calendar_entity` sigui l'`entity_id` complet (`todo.xxx`, `calendar.xxx`).
 
 **Gemini retorna error 429**
-Has superat la quota gratuïta. Espera una estona o canvia de model a `gemini-3.5-flash-lite`.
+Has superat la quota gratuïta d'aquell model. Amb `fallback_model` configurat (per defecte
+`gemini-3.5-flash-lite`) el bot passa sol al model alternatiu, perquè la quota es compta per
+model. Si també s'esgota, espera al reinici de quota (mitjanit hora del Pacífic, ~09:00 a
+Catalunya).
 
 **El panell lateral no carrega**
 L'add-on ha d'estar iniciat; el panell escolta al port intern 8099 i es publica via ingress.

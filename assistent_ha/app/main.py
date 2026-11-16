@@ -10,6 +10,7 @@ from typing import Any
 
 from telegram import Update
 
+from . import get_version
 from .config import Settings, load_settings
 from .ha import HomeAssistant
 from .llm import Agent
@@ -17,7 +18,7 @@ from .reminders import ReminderStore
 from .stt import SpeechToText
 from .telegram_bot import build_application
 
-VERSION = "0.1.0"
+VERSION = get_version()
 
 log = logging.getLogger(__name__)
 
